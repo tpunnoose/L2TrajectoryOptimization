@@ -36,7 +36,7 @@ function ADMMGroupConsensus(problem, num_iter)
 	for i=1:num_iter
 		U_ref = W - (1/problem.ρ)*λ
 		(X, U) = LQR(ρ, U_ref, problem)
-		for k=1:N
+		for k=1:p.N
 			β = problem.α/problem.ρ
 			v = W[SelectControl(k)] - 1/problem.ρ * ν[SelectControl(k)]
 			Y[SelectControl(k)] = L2Prox(β, v, problem)
