@@ -24,6 +24,20 @@ function ADMM(problem, num_iter)
 	return X, U, Y
 end
 
+function objective(X, U, p)
+	cost = 0
+	for i=1:(p.N)
+		cost += p.α*norm(U[SelectControl(i)])
+		if i != 1
+			cost += 0.5*X[SelectState(i)]'*p.Q_k*X[SelectState(i)]
+		end
+	end
+
+	cost += 0.5*X[SelectState(p.N+1)]'*p.Q_f*X[SelectState(p.N+1)]
+
+	return cost
+end
+
 function LQR(ρ, Y, Λ̄, p)
 	# Cost to go function over time
 	V = zeros(p.n, p.n, p.N+1)

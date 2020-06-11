@@ -10,10 +10,12 @@ include("Utils.jl")
 
 p = Problem(α, ρ, 100)
 
-X, U, Y = ADMM(p, 300)
+X, U, Y = ADMM(p, 1000)
 
 u_group_norm = [norm(U[SelectControl(i)]) for i = 1:p.N]
 y_group_norm = [norm(Y[SelectControl(i)]) for i = 1:p.N]
+
+objective(X, U, p)
 
 a = plot(1:p.N, u_group_norm)
 plot!(1:p.N, y_group_norm)
