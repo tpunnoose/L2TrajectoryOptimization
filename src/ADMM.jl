@@ -56,7 +56,8 @@ function LQR(ρ, Y, Λ̄, p)
 		d[:,k] = inv(R + p.B'*V[:,:,k+1]*p.B)*(R*U_ref[SelectControl(k)] - p.B'*v[:,k+1])
 
 		V[:,:, k] = p.Q_k + K[:,:,k]'*R*K[:,:,k] + (p.A + p.B*K[:,:,k])'*V[:,:,k+1]*(p.A+p.B*K[:,:,k])
-		v[:, k] = ((d[:,k] - U_ref[SelectControl(k)])'*R*K[:,:,k] + d[:,k]'*p.B'*V[:,:,k+1]*(p.A+p.B*K[:,:,k]))'
+		v[:, k] = ((d[:,k] - U_ref[SelectControl(k)])'*R*K[:,:,k] +
+					d[:,k]'*p.B'*V[:,:,k+1]*(p.A+p.B*K[:,:,k]) + v[:, k+1]'*(p.A+p.B*K[:,:,k]))'
 
 		k -= 1
 	end
