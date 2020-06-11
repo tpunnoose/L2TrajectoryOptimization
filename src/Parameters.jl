@@ -33,7 +33,7 @@ function Problem(α, ρ, N=100)
     Δt = tf / (N - 1)
 
     Q_f = 1e1 * Matrix{Float64}(I, n, n)
-    Q_k = 1e-9 * Matrix{Float64}(I, n, n)
+    Q_k = 1e-7 * Matrix{Float64}(I, n, n)
 
     Δr0 = [20.0, 30.0, 10.0] # initial position delta
     Δrd0 = [0.4, 0.6, -0.1] # intial velocity delta
@@ -61,7 +61,7 @@ function Problem(α, ρ, N=100)
     A_d = disc_sys[1:n, 1:n]
     B_d = disc_sys[1:n, (n+1):(n+m)]
 
-    u_max = 0.01
+    u_max = 10
 
     return Problem(N, n, m, x0, xf, Δt, Q_f, Q_k, n_, m_ego, A_d, B_d, α, ρ, u_max)
 end
