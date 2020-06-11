@@ -12,9 +12,9 @@ p = Problem(α, ρ, N)
 A = ones(p.m * p.N) + randn(p.m * p.N)*1e-4
 Y = ones(p.m * p.N) + randn(p.m * p.N)*1e-4
 
-LQRCVX(p.ρ, Y, A, p)
-Xs = StateTrajectoryToArray(X.value, p)
-Us = ControlTrajectoryToArray(U.value, p)
+X, U = LQRCVX(p.ρ, Y, A, p)
+Xs = StateTrajectoryToArray(X, p)
+Us = ControlTrajectoryToArray(U, p)
 a1 = plot(Xs')
 title!(a1, "CVX State")
 b1 = plot(Us')

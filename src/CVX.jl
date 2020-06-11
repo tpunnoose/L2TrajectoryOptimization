@@ -91,6 +91,6 @@ function LQRCVX(ρ, Y, Λ̄, p)
     constraints = [DynamicsConstraints(X, U, p); InitialConstraint(X, p)]
 
     problem = Convex.minimize(cost, constraints)
-    Convex.solve!(problem, ECOS.Optimizer())
+    Convex.solve!(problem, ECOS.Optimizer(verbose=0))
     return X.value, U.value
 end

@@ -9,7 +9,8 @@ function ADMM(problem, num_iter)
 	Λ̄ = ones(problem.m*problem.N)
 
 	for i=1:num_iter
-		(X, U) = LQR(ρ, Y, Λ̄, problem)
+		# (X, U) = LQR(ρ, Y, Λ̄, problem)
+		(X, U) = LQRCVX(ρ, Y,  Λ̄, problem)
 		for k=1:N
 			β = problem.α/problem.ρ
 			v = U[SelectControl(k)] + Λ̄[SelectControl(k)]
