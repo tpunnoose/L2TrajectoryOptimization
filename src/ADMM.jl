@@ -29,7 +29,6 @@ function LQR(ρ, Y, Λ̄, p)
 	V = zeros(p.n, p.n, p.N+1)
 	V[:,:, p.N+1] = p.Q_f
 	v = zeros(p.n, p.N+1)
-	c = zeros(p.N+1)
 
 	K = zeros(p.m, p.n, p.N)
 	d = zeros(p.m, p.N)
@@ -40,11 +39,10 @@ function LQR(ρ, Y, Λ̄, p)
 	k = p.N
 	while k > 0
 		K[:,:,k] = -inv(R + p.B'*V[:,:,k+1]*p.B)*p.B'*V[:,:,k+1]*p.A
-		d[:,k] = inv(R + p.B'*V[:,:,k+1]*p.B)*(R*U_ref[SelectControl(k)] - 0.5*p.B'*v[:,k+1])
+		d[:,k] = inv(R + p.B'*V[:,:,k+1]*p.B)*(R*U_ref[SelectControl(k)] - p.B'*v[:,k+1])
 
 		V[:,:, k] = p.Q_k + K[:,:,k]'*R*K[:,:,k] + (p.A + p.B*K[:,:,k])'*V[:,:,k+1]*(p.A+p.B*K[:,:,k])
-		v[:, k] = 2*((d[:,k] - U_ref[SelectControl(k)])'*R*K[:,:,k] + d[:,k]'*p.B'*V[:,:,k+1]*(p.A+p.B*K[:,:,k]))'
-		c[k] = (d[:,k]-U_ref[SelectControl(k)])'*R*(d[:,k]-U_ref[SelectControl(k)]) + d[:,k]'*p.B'*V[:,:,k+1]*p.B*d[:,k]
+		v[:, k] = ((d[:,k] - U_ref[SelectControl(k)])'*R*K[:,:,k] + d[:,k]'*p.B'*V[:,:,k+1]*(p.A+p.B*K[:,:,k]))'
 
 		k -= 1
 	end
