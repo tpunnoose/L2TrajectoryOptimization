@@ -2,7 +2,7 @@ include("CVX.jl")
 include("Parameters.jl")
 
 ##
-α = 0.001 # L2 weighting
+α = 1 # L2 weighting
 ρ = 1
 N = 100 # knot points
 

@@ -25,7 +25,7 @@ function DynamicsConstraints(X, U, parameters::Problem)
     constraints
 end
 
-BoxConstraint(U, parameters) = [abs(U) <= 1e-2]
+BoxConstraint(U, parameters) = [abs(U) <= parameters.u_max]
 
 InitialConstraint(X, parameters::Problem) = [X[SelectState(1)] == parameters.x0]
 
