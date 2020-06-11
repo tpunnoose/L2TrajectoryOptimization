@@ -1,3 +1,5 @@
+using LinearAlgebra
+
 mutable struct Problem
     N::Int64 # number of nodes
     n::Int64 # number of states
@@ -15,7 +17,7 @@ mutable struct Problem
     ρ::Float64 # augmented lagrangian parameter
 end
 
-function Problem()
+function Problem(N=100)
     μ = 3.99 * 10^14 # Standard gravitational parameter m^3 s^-2
     a = 6731.0 * 10^3 # Earth radius in m
     alt = 5e5 # Altitude of the target satellite in m
@@ -23,7 +25,7 @@ function Problem()
 
     n_ = sqrt(μ / orbit_radius^3)
 
-    N = 100 # Number of node points
+    # N = 100 # Number of node points
     n = 6 # State vector dimension
     m = 3 # Control vector dimension
     tf = 6000 # Trajectory duration in s (approx. = 1 revolutions)
