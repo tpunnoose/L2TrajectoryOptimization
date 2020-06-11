@@ -1,13 +1,18 @@
 using LinearAlgebra
+using Plots
 
 include("Parameters.jl")
 include("ADMM.jl")
-
-p = Problem()
+include("Utils.jl")
 
 ρ = 1.0
+α = 1e-3
 
-Y = ones(p.N*p.m)
-Λ = 0.1*ones(p.N*p.m)
+p = Problem(α, ρ)
 
-ADMM(p, 10)
+(X,U) = ADMM(p, 10)
+
+group_norm = [norm(U[Select3(i)]) for i=1:p.N]
+
+plot(1:p.N, group_norm)
+plot!(xlabel="Time", ylabel="Thrust Norm", title="L2 Group Norm ADMM")
