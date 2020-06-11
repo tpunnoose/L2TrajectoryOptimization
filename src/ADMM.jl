@@ -5,7 +5,7 @@ function ADMM(problem, num_iter)
 
 	X = zeros(problem.n*(problem.N+1))
 	U = zeros(problem.m*problem.N)
-	Y = ones(problem.m*problem.N)
+	Y = zeros(problem.m*problem.N)
 	Λ̄ = ones(problem.m*problem.N)
 
 	for i=1:num_iter
@@ -13,7 +13,7 @@ function ADMM(problem, num_iter)
 		for k=1:N
 			β = problem.α/problem.ρ
 			v = U[SelectControl(k)] + Λ̄[SelectControl(k)]
-			Y[SelectControl(k)] = L2Prox(β, v, p)
+			Y[SelectControl(k)] = L1Prox(β, v, p)
 			Λ̄[SelectControl(k)] += U[SelectControl(k)] - Y[SelectControl(k)]
 
 			# @show norm(U[SelectControl(k)] - Y[SelectControl(k)])
@@ -68,6 +68,6 @@ function L2Prox(β, v, p)
 	end
 end
 
-function L1Prox(β, v)
+function L1Prox(β, v, p)
 	return max.(0, v .- β) - max.(0, -v .- β)
 end

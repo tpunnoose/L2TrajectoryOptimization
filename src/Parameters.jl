@@ -33,12 +33,12 @@ function Problem(α, ρ, N=100)
     Δt = tf / (N - 1)
 
     Q_f = 1e5 * Matrix{Float64}(I, n, n)
-    Q_k = 0* Matrix{Float64}(I, n, n)
+    Q_k = 1e-3* Matrix{Float64}(I, n, n)
 
-    # Δr0 = [20.0, 30.0, 10.0] # initial position delta
-    # Δrd0 = [0.4, 0.6, -0.1] # intial velocity delta
-    Δr0 = [0.0, 0.0, 0.0] # initial position delta
-    Δrd0 = [0.0, 0.0, 0.0] # intial velocity delta
+    Δr0 = [20.0, 30.0, 10.0] # initial position delta
+    Δrd0 = [0.4, 0.6, -0.1] # intial velocity delta
+    # Δr0 = [0.0, 0.0, 0.0] # initial position delta
+    # Δrd0 = [0.0, 0.0, 0.0] # intial velocity delta
     x0 = [Δr0..., Δrd0...] # initial state
     xf = zeros(n)
     m_ego = 4.6
