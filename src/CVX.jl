@@ -25,7 +25,7 @@ function DynamicsConstraints(X, U, parameters::Problem)
     constraints
 end
 
-BoxConstraint(U, parameters) = [abs(U) <= parameters.u_max]
+NormConstraint(U, parameters) = [norm(U) <= parameters.u_max]
 
 InitialConstraint(X, parameters::Problem) = [X[SelectState(1)] == parameters.x0]
 
@@ -67,7 +67,7 @@ function CVX(parameters::Problem, alpha = 0.1)
     constraints = [
         DynamicsConstraints(X, U, parameters)
         InitialConstraint(X, parameters)
-        BoxConstraint(U, parameters)
+        NormConstraint(U, parameters)
     ]
     prob = Convex.minimize(total_cost, constraints)
     X, U, prob

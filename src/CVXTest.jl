@@ -5,7 +5,7 @@ include("ADMM.jl")
 ##
 α = 1 # L2 weighting
 ρ = 1
-N = 1000 # knot points
+N = 100 # knot points
 
 params = Problem(α, ρ, N)
 X, U, p = CVX(params)
@@ -22,6 +22,9 @@ println("\n\n -------------- CVX ------------")
 ##
 plot(U_norm)
 title!("CVX Control norm")
+##
+plot(Us')
+title!("CVX Control")
 
 ##
 plot(copy(Xs'))
