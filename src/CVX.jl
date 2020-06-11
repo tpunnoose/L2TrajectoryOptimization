@@ -72,3 +72,25 @@ function CVX(parameters::Problem, alpha = 0.1)
     prob = Convex.minimize(total_cost, constraints)
     X, U, prob
 end
+
+
+function ControlCost(U, Y, Λ̄, params)
+    R = params.ρ / 2 * I(params.m)
+    U_ref = Y - Λ̄
+    cost = 0
+    for t = 1:params.N
+        e = U[SelectControl(t)] - U_ref[SelectControl(t)]
+        cost += 0.5 * Convex.quadform(e, R)
+    end
+    return cost
+end
+
+function LQRCVX(ρ, Y, Λ̄, p)
+    X, U = Convex.Variable(p.n * (p.N + 1)), Convex.Variable(p.m * p.N)
+    cost = ControlCost(U, Y, Λ̄, p) + StageCost(X, p) + TerminalCost(X, p)
+    constraints = [DynamicsConstraints(X, U, p); InitialConstraint(X, p)]
+
+    problem = Convex.minimize(cost, constraints)
+    Convex.solve!(problem, ECOS.Optimizer())
+    return X.value, U.value
+end

@@ -13,6 +13,8 @@ Xs = StateTrajectoryToArray(X.value, params)
 Us = ControlTrajectoryToArray(U.value, params)
 U_norm = [norm(Us[:,i]) for i = 1:params.N]
 
+@show p.optval
+
 ##
 plot(U_norm)
 title!("Control norm")

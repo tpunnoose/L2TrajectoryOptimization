@@ -3,28 +3,6 @@ using Plots
 
 include("CVX.jl")
 include("ADMM.jl")
-
-function ControlCost(U, Y, Λ̄, params)
-    R = params.ρ / 2 * I(params.m)
-    U_ref = Y - Λ̄
-    cost = 0
-    for t = 1:params.N
-        e = U[SelectControl(t)] - U_ref[SelectControl(t)]
-        cost += 0.5 * Convex.quadform(e, R)
-    end
-    return cost
-end
-
-function LQRCVX(ρ, Y, Λ̄, p)
-    X, U = Convex.Variable(p.n * (p.N + 1)), Convex.Variable(p.m * p.N)
-    cost = ControlCost(U, Y, Λ̄, p) + StageCost(X, p) + TerminalCost(X, p)
-    constraints = [DynamicsConstraints(X, U, p); InitialConstraint(X, p)]
-
-    problem = Convex.minimize(cost, constraints)
-    Convex.solve!(problem, ECOS.Optimizer())
-    return X.value, U.value
-end
-
 ##
 α = 1e-2
 ρ = 1
