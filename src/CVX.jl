@@ -60,4 +60,4 @@ end
 ##
 X, U, p = CVX(Problem(2))
 Convex.solve!(p, ECOS.Optimizer(verbose=0))
-U_norm = [norm(U[Select3(i)],2) for i = 1:Int(floor(size(U)[1]/3))]
+U_norm = [norm(U[SelectControl(i)],2) for i = 1:Int(floor(size(U)[1]/3))]
