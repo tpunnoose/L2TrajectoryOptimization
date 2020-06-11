@@ -16,12 +16,13 @@ function ADMM(problem, num_iter)
 			Y[Select3(k)] = L2Prox(β, v)
 
 			Λ̄[Select3(k)] += U[Select3(k)] - Y[Select3(k)]
+
+			@show norm(U[Select3(k)] - Y[Select3(k)])
 		end
 
-		@show norm(U - Y)
 	end
 
-	return U
+	return (X, U)
 end
 
 function LQR(ρ, Y, Λ̄, p)
@@ -65,10 +66,6 @@ function L2Prox(β, v)
 	return max(0, 1-β/norm(v, 2))*v
 end
 
-function Select3(k)
-	return (3*(k-1)+1):(3*(k-1)+3)
-end
-
-function Select6(k)
-	return (6*(k-1)+1):(6*(k-1)+6)
+function L1Prox(β, v)
+	return max.(0, v .- β) - max.(0, -v .- β)
 end
