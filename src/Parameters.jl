@@ -15,6 +15,7 @@ mutable struct Problem
     B::Matrix{Float64} # control state matrix
     α::Float64 # regularizer parameter
     ρ::Float64 # augmented lagrangian parameter
+    u_max::Float64 # maximum control magnitude
 end
 
 function Problem(α, ρ, N=100)
@@ -60,5 +61,7 @@ function Problem(α, ρ, N=100)
     A_d = disc_sys[1:n, 1:n]
     B_d = disc_sys[1:n, (n+1):(n+m)]
 
-    return Problem(N, n, m, x0, xf, Δt, Q_f, Q_k, n_, m_ego, A_d, B_d, α, ρ)
+    u_max = 100
+
+    return Problem(N, n, m, x0, xf, Δt, Q_f, Q_k, n_, m_ego, A_d, B_d, α, ρ, u_max)
 end

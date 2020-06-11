@@ -13,7 +13,7 @@ function ADMM(problem, num_iter)
 		for k=1:N
 			β = problem.α/problem.ρ
 			v = U[SelectControl(k)] + Λ̄[SelectControl(k)]
-			Y[SelectControl(k)] = L2Prox(β, v)
+			Y[SelectControl(k)] = L2Prox(β, v, p)
 			Λ̄[SelectControl(k)] += U[SelectControl(k)] - Y[SelectControl(k)]
 
 			# @show norm(U[SelectControl(k)] - Y[SelectControl(k)])
@@ -61,8 +61,13 @@ function LQR(ρ, Y, Λ̄, p)
 	return (X, U)
 end
 
-function L2Prox(β, v)
-	return max(0, 1-β/norm(v, 2))*v
+function L2Prox(β, v, p)
+	l2_prox = max(0, 1-β/norm(v, 2))*v
+	if norm(l2_prox) > p.u_max
+		return l2_prox/norm(l2_prox)*p.u_max
+	else
+		return l2_prox
+	end
 end
 
 function L1Prox(β, v)
