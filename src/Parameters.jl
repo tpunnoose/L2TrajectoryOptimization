@@ -33,7 +33,7 @@ function Problem(α, ρ, N=100)
     Δt = tf / (N - 1)
 
     Q_f = 1e1 * Matrix{Float64}(I, n, n)
-    Q_k = 1e-5 * Matrix{Float64}(I, n, n)
+    Q_k = 1e-9 * Matrix{Float64}(I, n, n)
 
     Δr0 = [20.0, 30.0, 10.0] # initial position delta
     Δrd0 = [0.4, 0.6, -0.1] # intial velocity delta

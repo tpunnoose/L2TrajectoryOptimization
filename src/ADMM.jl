@@ -1,20 +1,16 @@
 function ADMM(problem, num_iter)
-	n = 6
-	N = 10
-	m = 3
-
 	X = zeros(problem.n*(problem.N+1))
 	U = zeros(problem.m*problem.N)
 	Y = zeros(problem.m*problem.N)
 	Λ̄ = ones(problem.m*problem.N)
 
 	for i=1:num_iter
-		# (X, U) = LQR(ρ, Y, Λ̄, problem)
-		(X, U) = LQRCVX(ρ, Y,  Λ̄, problem)
+		(X, U) = LQR(ρ, Y - Λ̄, problem)
+		# (X, U) = LQRCVX(ρ, Y,  Λ̄, problem)
 		for k=1:N
 			β = problem.α/problem.ρ
 			v = U[SelectControl(k)] + Λ̄[SelectControl(k)]
-			Y[SelectControl(k)] = L1Prox(β, v, p)
+			Y[SelectControl(k)] = L2Prox(β, v, problem)
 			Λ̄[SelectControl(k)] += U[SelectControl(k)] - Y[SelectControl(k)]
 
 			# @show norm(U[SelectControl(k)] - Y[SelectControl(k)])
@@ -23,6 +19,40 @@ function ADMM(problem, num_iter)
 	end
 
 	return X, U, Y
+end
+
+function ADMMGroupConsensus(problem, num_iter)
+	X = zeros(problem.n*(problem.N+1))
+	U = zeros(problem.m*problem.N)
+	Y = 1e-2*ones(problem.m*problem.N)
+	Z = 1e-2*ones(problem.m*problem.N)
+
+	W = 1/3*(U + Y + Z)
+
+	λ = ones(problem.m*problem.N) # Lagrange multiplier for LQR
+	ν = ones(problem.m*problem.N) # Lagrange multiplier for L2
+	μ = ones(problem.m*problem.N) # Lagrange multiplier for control constraints
+
+	for i=1:num_iter
+		U_ref = W - (1/problem.ρ)*λ
+		(X, U) = LQR(ρ, U_ref, problem)
+		for k=1:N
+			β = problem.α/problem.ρ
+			v = W[SelectControl(k)] - 1/problem.ρ * ν[SelectControl(k)]
+			Y[SelectControl(k)] = L2Prox(β, v, problem)
+
+			Z[SelectControl(k)] = ControlProjection(W[SelectControl(k)] - 1/problem.ρ * μ[SelectControl(k)], problem)
+			# @show norm(U[SelectControl(k)] - Y[SelectControl(k)])
+		end
+		W = 1/3*(U + Y + Z)
+		λ = λ + problem.ρ*(U - W)
+		ν = ν + problem.ρ*(Y - W)
+		μ = μ + problem.ρ*(Z - W)
+
+		println("Iter ", i, " -- Norm(U-Y): ", norm(U-Y))
+	end
+
+	return X, U, Y, Z
 end
 
 function objective(X, U, p)
@@ -37,9 +67,9 @@ function objective(X, U, p)
 	cost += 0.5*X[SelectState(p.N+1)]'*p.Q_f*X[SelectState(p.N+1)]
 
 	return cost
-end
+end#
 
-function LQR(ρ, Y, Λ̄, p)
+function LQR(ρ, U_ref, p)
 	# Cost to go function over time
 	V = zeros(p.n, p.n, p.N+1)
 	V[:,:, p.N+1] = p.Q_f
@@ -49,7 +79,6 @@ function LQR(ρ, Y, Λ̄, p)
 	d = zeros(p.m, p.N)
 
 	R = ρ/2*Matrix{Float64}(I, p.m, p.m)
-	U_ref = Y - Λ̄
 
 	k = p.N
 	while k > 0
@@ -76,14 +105,17 @@ function LQR(ρ, Y, Λ̄, p)
 end
 
 function L2Prox(β, v, p)
-	l2_prox = max(0, 1-β/norm(v, 2))*v
-	if norm(l2_prox) > p.u_max
-		return l2_prox/norm(l2_prox)*p.u_max
-	else
-		return l2_prox
-	end
+	return max(0, 1-β/norm(v, 2))*v
 end
 
 function L1Prox(β, v, p)
 	return max.(0, v .- β) - max.(0, -v .- β)
+end
+
+function ControlProjection(v, p)
+	if norm(v) > p.u_max
+		return v/norm(v)*p.u_max
+	else
+		return v
+	end
 end
