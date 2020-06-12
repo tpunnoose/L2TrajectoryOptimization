@@ -61,7 +61,7 @@ function Problem(α, ρ, N=100)
     A_d = disc_sys[1:n, 1:n]
     B_d = disc_sys[1:n, (n+1):(n+m)]
 
-    u_max = 0.005
+    u_max = 0.002
 
     return Problem(N, n, m, x0, xf, Δt, Q_f, Q_k, n_, m_ego, A_d, B_d, α, ρ, u_max)
 end
